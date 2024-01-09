@@ -111,6 +111,6 @@ pub(crate) async fn run_update_loop(baseurl: String, username: String, password:
             .await;
         }
 
-        time::sleep(time::Duration::from_secs(sleeptime * MINUTE)).await;
+        time::sleep(time::Duration::from_secs(sleeptime)).await;
     }
 }
