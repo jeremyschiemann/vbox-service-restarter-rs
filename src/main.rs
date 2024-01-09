@@ -1,5 +1,3 @@
-use log;
-use log::Log;
 use scraper::{Html, Selector};
 use std::env;
 use tokio::time;
@@ -20,20 +18,20 @@ async fn main() {
 
     let mut errors = Vec::new();
 
-    let username = env::var(USERNAME_KEY)
-        .map_err(|e| errors.push(format!("{USERNAME_KEY}: {}", e.to_string())));
+    let username =
+        env::var(USERNAME_KEY).map_err(|e| errors.push(format!("{USERNAME_KEY}: {}", e)));
 
-    let password = env::var(PASSWORD_KEY)
-        .map_err(|e| errors.push(format!("{PASSWORD_KEY}: {}", e.to_string())));
+    let password =
+        env::var(PASSWORD_KEY).map_err(|e| errors.push(format!("{PASSWORD_KEY}: {}", e)));
 
     let baseurl = env::var(BASEURL_KEY)
         .map(|val| format!("http://{}", val))
-        .map_err(|e| errors.push(format!("{BASEURL_KEY}: {}", e.to_string())));
+        .map_err(|e| errors.push(format!("{BASEURL_KEY}: {}", e)));
 
     let sleeptime: Result<u64, ()> = env::var(SLEEPTIME_KEY)
         .unwrap_or("10".to_string())
         .parse::<u64>()
-        .map_err(|e| errors.push(format!("{SLEEPTIME_KEY}: {}", e.to_string())));
+        .map_err(|e| errors.push(format!("{SLEEPTIME_KEY}: {}", e)));
 
     if !errors.is_empty() {
         errors.iter().for_each(|e| println!("{}", e));
@@ -46,7 +44,6 @@ async fn main() {
     let sleeptime = sleeptime.unwrap();
 
     let fetch_query = [("OPTION", 2)];
-
 
     let client = reqwest::Client::new();
 
@@ -74,27 +71,24 @@ async fn main() {
         let streamer_element = doc.select(&streamer_selector).next();
         let upnp_server_element = doc.select(&upnp_server_selector).next();
 
-        let streamer_down = match streamer_element
-            .unwrap()
-            .inner_html()
-            .trim_start_matches("&nbsp;")
-        {
-            "STARTED" => false,
-            _ => true,
-        };
-        let upnp_server_down = match upnp_server_element
-            .unwrap()
-            .inner_html()
-            .trim_start_matches("&nbsp;")
-        {
-            "STARTED" => false,
-            _ => true,
-        };
+        let streamer_down = matches!(
+            streamer_element
+                .unwrap()
+                .inner_html()
+                .trim_start_matches("&nbsp;"),
+            "STARTED"
+        );
+        let upnp_server_down = matches!(
+            upnp_server_element
+                .unwrap()
+                .inner_html()
+                .trim_start_matches("&nbsp;"),
+            "STARTED"
+        );
 
         println!("Status: {streamer_down}, {upnp_server_down}");
 
         if streamer_down || upnp_server_down {
-
             println!("Needs update");
 
             let update_query = [
@@ -108,7 +102,6 @@ async fn main() {
                 ("NEXT_STATE", 0),
             ];
 
-
             let res = client
                 .get(format!("{baseurl}/{URL_PATH}"))
                 .basic_auth(&username, Some(&password))
@@ -118,7 +111,6 @@ async fn main() {
 
             println!("{:?}", res.unwrap().status())
         }
-
 
         time::sleep(time::Duration::from_secs(sleeptime * MINUTE)).await;
     }
