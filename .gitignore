@@ -21,3 +21,6 @@ Cargo.lock
 
 # IDE
 .idea
+
+# cargo unused-features report
+report.json
