@@ -1,8 +1,8 @@
 FROM rust:1.75.0 as build-env
 WORKDIR /app
 COPY . /app
-RUN cargo build --release
+RUN RUSTFLAGS='-C target-cpu=native' cargo build --profile min
 
 FROM gcr.io/distroless/cc
-COPY --from=build-env /app/target/release/vbox-service-restarter-rs /
+COPY --from=build-env /app/target/min/vbox-service-restarter-rs /
 CMD ["./vbox-service-restarter-rs"]
