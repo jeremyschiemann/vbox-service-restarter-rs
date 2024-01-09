@@ -1,13 +1,10 @@
 use crate::constants::*;
 use scraper::{Html, Selector};
-use tokio::time;
 use std::string::String;
+use tokio::time;
 
 fn is_service_down(service_element: &str) -> bool {
-    !matches!(
-        service_element,
-        "STARTED"
-    )
+    !matches!(service_element, "STARTED")
 }
 
 async fn update_services(
@@ -67,12 +64,15 @@ async fn get_service_status(
     let streamer_str = streamer_html.trim_start_matches("&nbsp;");
     let upnp_server_str = upnp_server_html.trim_start_matches("&nbsp;");
 
-
     Ok((streamer_str.to_string(), upnp_server_str.to_string()))
 }
 
-
-pub(crate) async fn run_update_loop(baseurl: String, username: String, password: String, sleeptime: u64) {
+pub(crate) async fn run_update_loop(
+    baseurl: String,
+    username: String,
+    password: String,
+    sleeptime: u64,
+) {
     log::info!("Starting update loop");
 
     let client = reqwest::Client::new();
@@ -98,7 +98,11 @@ pub(crate) async fn run_update_loop(baseurl: String, username: String, password:
         let streamer_down = is_service_down(&streamer_element);
         let upnp_server_down = is_service_down(&upnp_server_element);
 
-        log::info!("Status: STREAMER={}, UPNP_SERVER={}", streamer_element, upnp_server_element);
+        log::info!(
+            "Status: STREAMER={}, UPNP_SERVER={}",
+            streamer_element,
+            upnp_server_element
+        );
 
         if streamer_down || upnp_server_down {
             log::info!("One or more services are not running!");

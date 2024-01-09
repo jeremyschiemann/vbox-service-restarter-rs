@@ -13,7 +13,6 @@ pub(crate) const STREAMER_SELECTOR: &str =
 pub(crate) const UPNP_SERVER_SELECTOR: &str =
     "#SysServicesForm > center > table > tbody > tr:nth-child(6) > td:nth-child(2) > font > center";
 
-
 pub(crate) fn get_parsed_selector(selector_str: &str) -> Selector {
     match Selector::parse(selector_str) {
         Ok(selector) => selector,

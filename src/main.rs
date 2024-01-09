@@ -23,7 +23,7 @@ async fn main() {
         .map_err(|e| errors.push(format!("{BASEURL_KEY}: {}", e)));
 
     let sleeptime: Result<u64, ()> = env::var(SLEEPTIME_KEY)
-        .unwrap_or(format!("{}",  10*MINUTE))
+        .unwrap_or(format!("{}", 10 * MINUTE))
         .parse::<u64>()
         .map_err(|e| errors.push(format!("{SLEEPTIME_KEY}: {}", e)));
 
